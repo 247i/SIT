@@ -2,11 +2,21 @@
 rem cd /d %~dp0
 pushd %~dp0
 cd ..
-rem Set ldt=20200204222340.360000+330 - Below code will get date and time in this format.
-for /F "usebackq tokens=1,2 delims==" %%i in (`wmic os get LocalDateTime /VALUE 2^>NUL`) do if '.%%i.'=='.LocalDateTime.' set ldt=%%j
+rem Below code will get date and time in this format.
+::: Begin set date
 
-rem extract the content form the file.
-Set /a Year=%ldt:~0,4%, Month=1%ldt:~4,2% %% 100, Day=1%ldt:~6,2% %% 100,Hour=%ldt:~8,2%, Minute=%ldt:~10,2%, Seconds=1%ldt:~12,2% %% 100
+for /f "tokens=1-4 delims=/-. " %%i in ('date /t') do (call :set_date %%i %%j %%k %%l)
+goto :end_set_date
+
+:set_date
+if "%1:~0,1%" gtr "9" shift
+for /f "skip=1 tokens=2-4 delims=(-)" %%m in ('echo,^|date') do (set %%m=%1&set %%n=%2&set %%o=%3)
+goto :eof
+
+:end_set_date
+::: End set date
+
+Set /a Year=%yy%, Month=%mm%, Day=%dd%
 
 rem compute leap year
 Set /a YMod4=%Year% %% 4, LYear = 0
@@ -26,7 +36,7 @@ Rem Extensionts are disabled and variable value is takenout
 endlocal & Set "Doy=%DoY%"
 
 Rem convert to Thiruvalluvar day of year and year.
-Set /a TrYear = %Year%+31, TrDay = %DoY% - 14
+Set /a TrYear = %Year%+31, TrDay = %DoY% - 15
 if %LYear% equ 1 set /A Trday = %TrDay% - 1
 if %Month% equ 1 if %TrDay% lss 1 ( set /A TrYear = %TrYear% - 1, TrDay = %TrDay% + 365 + %LYear%)
 Rem Thiruvalluvar Day conversion over 
