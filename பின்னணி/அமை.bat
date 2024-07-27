@@ -1,3 +1,8 @@
+Rem This will launch a executable with the name of this file (i.e.xyz) under samename (xyz) folder 
+Rem inside the t folder next to this file. Also forwards all the arguments to that executable
+Rem "%~dp0t\%~n0\%~n0" %*
+
+
 @echo on
 rem cd /d %~dp0
 pushd %~dp0
