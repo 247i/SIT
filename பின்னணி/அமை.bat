@@ -2,26 +2,21 @@ Rem This will launch a executable with the name of this file (i.e.xyz) under sam
 Rem inside the t folder next to this file. Also forwards all the arguments to that executable
 Rem "%~dp0t\%~n0\%~n0" %*
 
-
 @echo on
 rem cd /d %~dp0
 pushd %~dp0
 cd ..
 rem Below code will get date and time in this format.
-::: Begin set date
 
-for /f "tokens=1-4 delims=/-. " %%i in ('date /t') do (call :set_date %%i %%j %%k %%l)
-goto :end_set_date
-
-:set_date
-if "%1:~0,1%" gtr "9" shift
-for /f "skip=1 tokens=2-4 delims=(-)" %%m in ('echo,^|date') do (set %%m=%1&set %%n=%2&set %%o=%3)
-goto :eof
-
-:end_set_date
-::: End set date
-
-Set /a Year=%yy%, Month=%mm%, Day=%dd%
+for /F "skip=1 delims=" %%F in ('
+    wmic PATH Win32_LocalTime GET Day^,Month^,Year /FORMAT:TABLE
+') do (
+    for /F "tokens=1-3" %%L in ("%%F") do (
+        set /a Day=%%L
+        set /a Month=%%M
+        set /a Year=%%N
+    )
+)
 
 rem compute leap year
 Set /a YMod4=%Year% %% 4, LYear = 0
@@ -51,6 +46,7 @@ set /a DoTLY = %TrDaY% + %TYMod4%*365
 Set /a Kod= (%DoTLY% %% 1330)+1
 Set Kod1=000%Kod%
 Set Kod2=%Kod1:~-4%
+
 start /min பின்னணிதகவல்.exe பின்னணி\திருக்குறள்-%Kod2%.bgi /NOLICPROMPT /SILENT /timer:0
 echo திருவள்ளுவர் ஆண்டு  %TrYear% நாள் %TrDay% 
 
